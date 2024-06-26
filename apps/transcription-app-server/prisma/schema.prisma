@@ -1,0 +1,51 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Transcription {
+  audioFile     Json?
+  createdAt     DateTime       @default(now())
+  id            String         @id @default(cuid())
+  promptResults PromptResult[]
+  status        String?
+  transcript    String?
+  updatedAt     DateTime       @updatedAt
+}
+
+model PromptResult {
+  createdAt       DateTime       @default(now())
+  id              String         @id @default(cuid())
+  prompt          Prompt?        @relation(fields: [promptId], references: [id])
+  promptId        String?
+  result          String?
+  status          String?
+  transcription   Transcription? @relation(fields: [transcriptionId], references: [id])
+  transcriptionId String?
+  updatedAt       DateTime       @updatedAt
+}
+
+model Prompt {
+  content       String?
+  createdAt     DateTime       @default(now())
+  description   String?
+  id            String         @id @default(cuid())
+  promptResults PromptResult[]
+  updatedAt     DateTime       @updatedAt
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
